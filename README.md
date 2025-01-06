@@ -11,10 +11,18 @@ This project was derived from https://github.com/techytobias/NYC-Subway-Display/
 #### Capabilities
 - Display times for arriving uptown and downtown trains at any NYC subway station
 - Rotate through time displays for multiple stations
-- [Front of Display](display_front.jpeg)
-- [Back of Display](display_back.jpeg)
-- [Display Internals](display_internals.jpeg)
-- [Demo](display_demo.mov)
+
+Demo:
+![](display_demo.mov)
+
+Front of Display
+![image](display_front.jpeg)
+
+Back of Display
+![image](display_back.jpeg)
+
+Display Internals
+![image](display_internals.jpeg)
 
 ## Materials
 - Raspberry Pi Zero W (again, unpowered for this application)
@@ -81,8 +89,8 @@ This project was derived from https://github.com/techytobias/NYC-Subway-Display/
 While this project is functionally "complete" there are several more improvements that can be made:
 
 - The button for a soft power down (and potentially rebooting every 24 hours) is not fully working in the cron job. While this isn't a must-have, it is a nice-to-have. As cutting power to the pi without shutting it down first can corrupt the SD card. As a workaround, you could ssh in and power down prior to cutting power.
-- The LED panel has quite a bit of flicker. While some of this is likely caused by the pi zero w, some of this is also likely caused by inefficient resource utilization and could be optimized.'
-    - Update: The flicker was improved by adding in the ``--led-no-drop-privs`` flag to the command, so the problem is not as bad as it originally was.
+- ~The LED panel has quite a bit of flicker. While some of this is likely caused by the pi zero w, some of this is also likely caused by inefficient resource utilization and could be optimized.~
+    - Update: The flicker was improved by adding in the ``--led-no-drop-privs`` flag to the command, so the problem is not as bad as it originally was. But this still could be optimized.
 - There is a long delay after the last times are displayed before it loops again. This could be shortened by optimizing code paths.
 - Enclosure improvements: Overall fit and finish could be improved, as well as the rigidity.
 - Code cleanup: For example, while this version does not use the disruption code, it is still included.
