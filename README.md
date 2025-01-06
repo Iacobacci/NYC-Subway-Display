@@ -13,7 +13,7 @@ This project was derived from https://github.com/techytobias/NYC-Subway-Display/
 - Rotate through time displays for multiple stations
 
 Demo:
-![](display_demo.mov)
+![](display_demo.gif)
 
 Front of Display
 ![image](display_front.jpeg)
@@ -89,8 +89,7 @@ Display Internals
 While this project is functionally "complete" there are several more improvements that can be made:
 
 - The button for a soft power down (and potentially rebooting every 24 hours) is not fully working in the cron job. While this isn't a must-have, it is a nice-to-have. As cutting power to the pi without shutting it down first can corrupt the SD card. As a workaround, you could ssh in and power down prior to cutting power.
-- ~The LED panel has quite a bit of flicker. While some of this is likely caused by the pi zero w, some of this is also likely caused by inefficient resource utilization and could be optimized.~
-    - Update: The flicker was improved by adding in the ``--led-no-drop-privs`` flag to the command, so the problem is not as bad as it originally was. But this still could be optimized.
+- The LED panel still has some flicker even after adding in the ``--led-no-drop-privs`` flag (which significantly reduced flicker from the original baseline). While some of this is likely caused by the pi zero w's hardware limitations, some of this is also likely caused by inefficient resource utilization and could be optimized.
 - There is a long delay after the last times are displayed before it loops again. This could be shortened by optimizing code paths.
 - Enclosure improvements: Overall fit and finish could be improved, as well as the rigidity.
 - Code cleanup: For example, while this version does not use the disruption code, it is still included.
