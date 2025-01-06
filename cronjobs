@@ -1,0 +1,5 @@
+// Access via ``sudo crontab -e``
+@reboot while ! ip link show wlan0 | grep -q "state UP"; do sleep 1; done && sudo /home/display/rpi-rgb-led-matrix/bindings/python/samples/rundisplay.py --led-rows=32 --led-cols=64 -b=40 --led-no-drop-privs &
+@reboot sudo /home/display/pushbutton_shutdown.py &
+0 */12 * * * sudo /sbin/shutdown -r now
+

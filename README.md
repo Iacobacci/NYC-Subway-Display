@@ -1,48 +1,49 @@
 # NYC Subway Time LED Matrix Display
 ## Overview
+
+This project was derived from https://github.com/techytobias/NYC-Subway-Display/. Changes to this version:
+- Displays 4 screens on a loop related to trains at 34th st Herald Square: BDFM Uptown, BDFM Downtown, NQRW Uptown, NQRW Downtown.
+- Removal of the disruptions screen.
+- The MTA no longer requires API keys to access the subway feed.
+- Utilizes a Raspberry Pi Zero W with no driver (underpowered for this project, likely causing the screen flickering).
+- Inclusion of Fusion 360 files for enclosure
+
 #### Capabilities
-- Display times for arriving trains at any NYC subway station
+- Display times for arriving uptown and downtown trains at any NYC subway station
 - Rotate through time displays for multiple stations
-- [Image of display](https://github.com/techytobias/NYC-Subway-Display/blob/main/V1Display.JPG)
-- [Video of display](https://github.com/techytobias/NYC-Subway-Display/blob/main/V2DisplayVideo.MOV)
-- [Disruptions Screen](https://github.com/techytobias/NYC-Subway-Display/blob/main/V2NewDisruptionsScreenExample.JPG)
+- [Front of Display](display_front.jpeg)
+- [Back of Display](display_back.jpeg)
+- [Display Internals](display_internals.jpeg)
+- [Demo](display_demo.mov)
+
 ## Materials
-- Raspberry Pi (Pi 3 Model B or later recommended) with internet access over ethernet or WiFi
-    - Do not overclock it (can cause screen issues)
+- Raspberry Pi Zero W (again, unpowered for this application)
 - SD Card (8GB Class 10 or better)
-- LED Matrix. I used [this Adafruit one, which is 64 x 32 with a 5mm led spacing](https://www.adafruit.com/product/2277)
-- Adafruit RGB Matrix driver. I used [this one with the RTC](https://www.adafruit.com/product/2345), but you should be able to use the regular one.
-- Adequate power for the display and Pi. [This adapter](https://www.adafruit.com/product/1466) should work great.
-    - It's worth noting that my display is configured with 2A to the hat and 500mA to the Pi over USB. It works using lower brightness, but there is some flicker.
-- Appropriate peripherals (Display, keyboard, mouse, etc) or SSH enabled by default.
+- LED Matrix. I used [this Adafruit one, which is 64 x 32 with a 2.5mm led spacing](https://www.adafruit.com/product/5036)
+- Adequate power for the display and Pi -- I used [this adapter](https://www.adafruit.com/product/1466).
 
 ## Before You Begin This Guide
-- Install Raspbian (No desktop environment needed)
-- Keeping the default user "pi" will work best, as that is what's configured in packageinst.sh 
-    - You may still change the default password
-    - If are advanced and you wish to use a different username, modify packageinst.sh for the new paths. 
+- Follow [this setup](https://github.com/hzeller/rpi-rgb-led-matrix/tree/master) guide to get your LED Matrix Panel working. (As far as I can tell, this is the most popular library for these panels).
+- Wire up your LED Matrix following that guide depending on your hardware.
+- Follow the [Python setup instructions](https://github.com/hzeller/rpi-rgb-led-matrix/tree/master/bindings/python#python-3) as well.
+- Install Headless Raspbian with user display and hostname displaypi. Also remember to enable SSH.
+    - You can use a different username/hostname, but you may need to modify different aspects of this code.
 - Enable SSH
-- Get an MTA API key [here](https://api.mta.info).
-- Install Python 3 (likely installed by default) and PIP (you likely will need to install) on the Raspberry Pi (For retrieving packages)
-- Follow [this Adafruit guide](https://learn.adafruit.com/adafruit-rgb-matrix-plus-real-time-clock-hat-for-raspberry-pi/driving-matrices) to get the examples running on your display.
-    - You can pick between quality and convenience, both work for the purposes of this guide.
-    - Ensure that you are able to run example 0 (the rotating cube) before continuing.
-    - If the display works for a second and then shuts off, you may not have sufficient power.
-    - If there is severe aliasing or flickering, experiment with different values for --led-gpio-slowdown. I used --led-gpio-slowdown=2
+- Don't move onto this project until you have [Demo -D0 completed (the rotating cube)](https://github.com/hzeller/rpi-rgb-led-matrix/tree/master?tab=readme-ov-file#lets-do-it).
 
 ## Creating the display
-- At this point, I'm assuming that you have the rotating cube demo file working. Your file structure should look like /home/pi/rpi-rgb-led-matrix/bindings/python/samples/
+- At this point, I'm assuming that you have the rotating cube demo file working. Your file structure should look like /home/display/rpi-rgb-led-matrix/bindings/python/samples/
 - We will be keeping this file structure during this guide for the sake of simplicity.
 #### Transferring Files
-- Move the files rundisplay.py , mtacalls2.py (be sure to add your API key in the two places) , stops.csv , and packageinst.sh to /home/pi/rpi-rgb-led-matrix/bindings/python/samples/
-    - Using FileZilla over SFTP is the reccommended way to do this.
+- Move the files rundisplay.py , mtacalls2.py, stops.csv , and packageinst.sh to /home/displau/rpi-rgb-led-matrix/bindings/python/samples/
+    - I used scp to move the files over.
 #### Installing Python dependencies
 - In your SSH window, change directory to our main directory
-    - cd /home/pi/rpi-rgb-led-matrix/bindings/python/samples/
+    - cd /home/display/rpi-rgb-led-matrix/bindings/python/samples/
 - Run packageinst.sh (You may need to make the file executable using the command below)
     - sudo chmod +x packageinst.sh
     - sudo ./packageinst.sh
-- Check your work. You should see lots of new folders in the /home/pi/rpi-rgb-led-matrix/bindings/python/ directory.
+- Check your work. You should see lots of new folders in the /home/display/rpi-rgb-led-matrix/bindings/python/ directory.
 ### Running the code
 - First, make rundisplay.py executable
     - sudo chmod +x rundisplay.py
@@ -67,14 +68,22 @@
 - you should see train times print out after a few seconds. If you don't, and you see a python error, search the error on stack exchange.
 
 ## Customization
-- Use stops.csv to find the code for your desired station(s). Use only the first three letters.
+- Use stops.csv to find the code for your desired station(s). Use only the first three letters -- the N and S will be used for the uptown and downtown screens.
     - e.g, 232 for Borough Hall, or A41 for Jay St-Metrotech.
     - Note that the station names for some stations in stops.csv have been shortened to fit better on the display.
-    - Ensure to change the data links on line 10 of mtacalls.py if your station is not on the 1,2,3,4,5,6,A,B,C,D,E,F,M
-    - You may also need to edit the c value in lines 140 and 142 of rundisplay.py to reflect the number of stations if you are not using 3. 
-- Modify the time filter for how long it takes you to get to your station (change mintoarrival on line 51 of mtacalls2.py)
-- Modify the font - I like the font spleen. Change on line 56 of rundisplay.py
-- Edit /etc/rc.local to make the display start on boot and run continuously
-    - See example rc.local file
-    - I also recommend creating a cron job that reboots the pi automatically every day. This will help with stability.
+    - Ensure to change the data links on line 10 of [mtacalls.py](/mtacalls2.py#10) if your station is not on the B,D,F,M,N,Q,R,W. These subway feed links can be found [here](https://api.mta.info/#/subwayRealTimeFeeds).
+- Modify the time filter for how long it takes you to get to your station (change mintoarrival on line 54 of [mtacalls2.py](/mtacalls2.py#54))
+- Modify the font - I like the font spleen. Change on line 86 of [rundisplay.py](/rundisplay.py#86)
+- Create a cron job to run the program on boot, have a button for soft power down (GPIO 26), and reboot every 24 hours.
+
+## To-Do
+
+While this project is functionally "complete" there are several more improvements that can be made:
+
+- The button for a soft power down (and potentially rebooting every 24 hours) is not fully working in the cron job. While this isn't a must-have, it is a nice-to-have. As cutting power to the pi without shutting it down first can corrupt the SD card. As a workaround, you could ssh in and power down prior to cutting power.
+- The LED panel has quite a bit of flicker. While some of this is likely caused by the pi zero w, some of this is also likely caused by inefficient resource utilization and could be optimized.'
+    - Update: The flicker was improved by adding in the ``--led-no-drop-privs`` flag to the command, so the problem is not as bad as it originally was.
+- There is a long delay after the last times are displayed before it loops again. This could be shortened by optimizing code paths.
+- Enclosure improvements: Overall fit and finish could be improved, as well as the rigidity.
+- Code cleanup: For example, while this version does not use the disruption code, it is still included.
     
